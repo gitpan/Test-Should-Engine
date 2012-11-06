@@ -41,8 +41,9 @@ RULES
 
         strict equality.
 
-    should_be_a
+    should_be_a / should_be_an
             MyObj->new()->should_be_a('MyObj');
+            MyObj->new()->should_be_an('ARRAY');
 
         Checks type.
 

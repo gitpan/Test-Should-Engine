@@ -2,7 +2,7 @@ package Test::Should::Engine;
 use strict;
 use warnings;
 use 5.010001;
-our $VERSION = '0.03';
+our $VERSION = '0.04';
 
 use Carp ();
 use Storable ();
@@ -30,7 +30,7 @@ sub run {
     } elsif ($pattern eq 'should_be_equal') {
         local $Storable::canonical = 1;
         return Storable::nfreeze(\$subject) eq Storable::nfreeze(\$args[0]);
-    } elsif ($pattern eq 'should_be_a') {
+    } elsif ($pattern =~ /^should_be_an?$/) {
         return UNIVERSAL::isa($subject, $args[0]);
     } elsif ($pattern eq 'should_be_above') {
         return $subject > $args[0];
@@ -39,7 +39,11 @@ sub run {
     } elsif ($pattern eq 'should_match') {
         return !!($subject =~ $args[0]);
     } elsif ($pattern eq 'should_have_length') {
-        return length($subject) == $args[0];
+        if (ref $subject eq 'ARRAY') {
+            return (@$subject == $args[0]);
+        } else {
+            return length($subject) == $args[0];
+        }
     } elsif ($pattern eq 'should_include') {
         if (ref $subject eq 'ARRAY') {
             for (@$subject) {
@@ -130,9 +134,10 @@ On String, the length is zero.
 
 strict equality.
 
-=item should_be_a
+=item should_be_a / should_be_an
 
     MyObj->new()->should_be_a('MyObj');
+    MyObj->new()->should_be_an('ARRAY');
 
 Checks type.
 

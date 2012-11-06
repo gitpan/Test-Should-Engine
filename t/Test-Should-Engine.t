@@ -92,6 +92,14 @@ describe 'Test::Should::Engine' => sub {
             test_false('should_be_a', bless([], 'Foo'), 'Bar');
         };
     };
+    context 'should_be_an' => sub {
+        it 'returns true on child class' => sub {
+            test_true('should_be_an', bless([], 'Foo'), 'Foo');
+        };
+        it 'returns false on non-child class' => sub {
+            test_false('should_be_an', bless([], 'Foo'), 'Bar');
+        };
+    };
     context 'should_be_above' => sub {
         it 'returns true on above value' => sub {
             test_true('should_be_above', 9, 5);
@@ -123,11 +131,22 @@ describe 'Test::Should::Engine' => sub {
         };
     };
     context 'should_have_length' => sub {
-        it 'returns true on matched' => sub {
-            test_true('should_have_length', 'hoge', 4);
+        context 'when argument is a string' => sub {
+            it 'returns true on matched' => sub {
+                test_true('should_have_length', 'hoge', 4);
+            };
+            it 'returns false on not matched' => sub {
+                test_false('should_have_length', 'hoge', 2);
+            };
         };
-        it 'returns false on not matched' => sub {
-            test_false('should_have_length', 'hoge', 2);
+
+        context 'when argument is an array' => sub {
+            it 'returns true on matched' => sub {
+                test_true('should_have_length', [1, 2, 3], 3);
+            };
+            it 'returns false on not matched' => sub {
+                test_false('should_have_length', [1, 2, 3], 2);
+            };
         };
     };
     context 'should_include' => sub {
